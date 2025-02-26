@@ -9,6 +9,7 @@ using System.Security.Cryptography;
 namespace backend.Controllers;
 
 [ApiController]
+[Route("api/", Name = "Authentication")]
 public class AuthController : ControllerBase
 {
     private readonly IConfiguration _configuration;
@@ -25,6 +26,7 @@ public class AuthController : ControllerBase
     )];
 
     [HttpPost]
+    [Route("session")]
     public IActionResult Session(User user)
     {
         if (!(user.Email == users[0].Email && user.Password == users[0].Password))
@@ -45,11 +47,12 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost]
+    [Route("refresh")]
     public IActionResult Refresh(User user)
     {
         if (!(user.Email == users[0].Email && user.Password == users[0].Password))
         {
-            return StatusCode(500, new { message = "Email or password is incorrect!" });
+            return StatusCode(404, new { message = "Email or password is incorrect!" });
         }
 
         var jwt = GenerateJwtToken(user);
@@ -66,7 +69,8 @@ public class AuthController : ControllerBase
 
     private string GenerateJwtToken(User user)
     {
-        var jwtKey = _configuration["Jwt:Key"] ?? "RosaCachorroGato";
+        //If jwt:key value from configurations is null, then use RosaCachorroGato
+        var jwtKey = _configuration["Jwt:Key"] ?? "Roxo e legal Macarrao e bom Macarrao e Roxo e Carro Bom";
         var key = Encoding.ASCII.GetBytes(jwtKey);
 
         var claims = new List<Claim>
