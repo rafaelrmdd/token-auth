@@ -1,6 +1,7 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import { instance } from "../../services/api/api";
 import { AxiosResponse } from "axios";
+import { useNavigate } from "react-router";
 
 export function Login() {
 
@@ -27,6 +28,8 @@ export function Login() {
     //     postAuth();
     // }, [])
 
+    const navigate = useNavigate();
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -45,6 +48,8 @@ export function Login() {
                 setData(response.data)
                 console.log('response: ', response);
                 console.log('data: ', data);
+
+                navigate("/home")
             }
 
         }catch(error) {
