@@ -5,6 +5,8 @@ using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Cryptography;
+using System.Collections;
+using Microsoft.AspNetCore.Authorization;
 
 namespace backend.Controllers;
 
@@ -18,12 +20,22 @@ public class AuthController : ControllerBase
         _configuration = configuration;
     }
 
-    User[] users = [new User(
-        "admin@gmail.com",
-        ["users.list", "users.create", "metrics.list"],
-        "123456",
-        ["administrator"]
-    )];
+    List<User> users = new List<User> {
+        new User(
+            "admin@gmail.com",
+            ["users.list", "users.create", "metrics.list"],
+            "123456",
+            ["administrator"]
+        ),
+    };
+
+    [HttpGet]
+    [Route("me")]
+    [Authorize]
+    public IActionResult Me()
+    {
+        return Ok(users.ElementAt(0));
+    }
 
     [HttpPost]
     [Route("session")]
@@ -69,9 +81,8 @@ public class AuthController : ControllerBase
 
     private string GenerateJwtToken(User user)
     {
-        //If jwt:key value from configurations is null, then use RosaCachorroGato
-        var jwtKey = _configuration["Jwt:Key"] ?? "Roxo e legal Macarrao e bom Macarrao e Roxo e Carro Bom";
-        var key = Encoding.ASCII.GetBytes(jwtKey);
+        var jwtKey = _configuration["Jwt:Key"];
+        var key = Encoding.ASCII.GetBytes(jwtKey!);
 
         var claims = new List<Claim>
         {
@@ -92,13 +103,13 @@ public class AuthController : ControllerBase
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddHours(3), // Token válido por 3 horas
+            Expires = DateTime.UtcNow.AddSeconds(10),
             SigningCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(key),
                 SecurityAlgorithms.HmacSha256Signature
             ),
-            Issuer = _configuration["Jwt:Issuer"] ?? "YourAppIssuer",
-            Audience = _configuration["Jwt:Audience"] ?? "YourAppAudience"
+            Issuer = _configuration["Jwt:Issuer"],
+            Audience = _configuration["Jwt:Audience"]
         };
 
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -109,9 +120,9 @@ public class AuthController : ControllerBase
 
     private string GenerateRefreshToken()
     {
-        var randomNumber = new byte[64];
-        using var rng = RandomNumberGenerator.Create();
-        rng.GetBytes(randomNumber);
-        return Convert.ToBase64String(randomNumber);
+        Guid refreshToken = Guid.NewGuid();
+        string refreshTokenString = refreshToken.ToString();
+
+        return refreshTokenString;
     }
 }

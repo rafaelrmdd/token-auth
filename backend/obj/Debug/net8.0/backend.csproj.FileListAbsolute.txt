@@ -38,3 +38,6 @@ C:\Users\rafar\OneDrive\Área de Trabalho\vscode projects\React\projetos-pessoai
 C:\Users\rafar\OneDrive\Área de Trabalho\vscode projects\React\projetos-pessoais\token-auth\backend\obj\Debug\net8.0\backend.pdb
 C:\Users\rafar\OneDrive\Área de Trabalho\vscode projects\React\projetos-pessoais\token-auth\backend\obj\Debug\net8.0\backend.genruntimeconfig.cache
 C:\Users\rafar\OneDrive\Área de Trabalho\vscode projects\React\projetos-pessoais\token-auth\backend\obj\Debug\net8.0\ref\backend.dll
+C:\Users\rafar\OneDrive\Área de Trabalho\vscode projects\React\projetos-pessoais\token-auth\backend\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\rafar\OneDrive\Área de Trabalho\vscode projects\React\projetos-pessoais\token-auth\backend\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.dll
+C:\Users\rafar\OneDrive\Área de Trabalho\vscode projects\React\projetos-pessoais\token-auth\backend\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll

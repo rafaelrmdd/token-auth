@@ -1,7 +1,13 @@
+import { useContext } from "react"
+import { AuthContext } from "../../context/AuthContext"
+
 export function Home() {
+
+    const { user } = useContext(AuthContext)
+
     return (
         <div>
-            <p>Home</p>
+            <p>{user?.email}</p>
         </div>
     )
 }
