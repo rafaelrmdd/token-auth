@@ -41,6 +41,7 @@ public class AuthController : ControllerBase
     [Route("session")]
     public IActionResult Session(User user)
     {
+
         if (!(user.Email == users[0].Email && user.Password == users[0].Password))
         {
             return StatusCode(500, new { message = "Email or password is incorrect!" });

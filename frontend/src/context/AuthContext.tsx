@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useEffect, useState } from "react";
-import { instance } from "../services/api/api";
+import { api } from "../services/api/api";
 import { AxiosResponse } from "axios";
 import { useNavigate } from "react-router";
 import { parseCookies, setCookie } from "nookies";
@@ -30,11 +30,17 @@ export const AuthContext = createContext({} as AuthContextProps);
 
 export function AuthContextProvider ({children} : AuthProviderProps) {
 
+    //If the user reloads the page, the data will show anyway
     useEffect(() => {
         const { 'auth.token': token } = parseCookies();
+        
 
         if (token) {
-            instance.get('me').then(response => console.log('response: ', response))
+            api.get('me').then(response => {
+                const { email, permissions, roles } = response.data
+
+                setUser({ email, permissions, roles })
+            })
         }
     }, [])
 
@@ -44,7 +50,7 @@ export function AuthContextProvider ({children} : AuthProviderProps) {
     
     async function signIn({email, password} : SignInCredentials) {
         try{
-            const response : AxiosResponse = await instance.post('session', {
+            const response : AxiosResponse = await api.post('session', {
                 email: email,
                 permissions: ["teste"],
                 password: password,
@@ -53,11 +59,13 @@ export function AuthContextProvider ({children} : AuthProviderProps) {
 
             const { jwt, refreshToken, permissions, roles } = response.data;
 
+            //Saving JWT on browser cookies
             setCookie(undefined, 'auth.token', jwt, {
                 maxAge: 60 * 60 * 24 * 30, // 30 days
                 path: "/"
             });
 
+            //Saving refresh token on browser cookies
             setCookie(undefined, 'auth.refreshToken', refreshToken, {
                 maxAge: 60 * 60 * 24 * 30,
                 path: "/"
@@ -69,7 +77,8 @@ export function AuthContextProvider ({children} : AuthProviderProps) {
                 roles
             })
 
-            console.log('response: ', response);
+            api.defaults.headers['Authorization'] = `Bearer ${jwt}` 
+
             navigate("/home")
 
         }catch(error) {

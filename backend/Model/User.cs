@@ -7,6 +7,8 @@ public class User
     public string Password { get; set; }
     public string[] Roles { get; set; }
 
+    public User() { }
+
     public User(string email, string[] permissions, string password, string[] roles)
     {
         Email = email;
