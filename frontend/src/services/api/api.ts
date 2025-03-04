@@ -33,8 +33,9 @@ api.interceptors.response.use(response => {
                 api.post('refresh', {
                     refreshToken,
                 }).then(response => {
+                    console.log('response api: ', response);
                     const { jwt } = response.data;
-    
+                
                     setCookie(undefined, 'auth.token', jwt, {
                         maxAge: 60 * 60 * 24 * 30, // 30 days
                         path: "/"
