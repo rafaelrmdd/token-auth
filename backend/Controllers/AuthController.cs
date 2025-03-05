@@ -9,6 +9,7 @@ using System.Collections;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging.Abstractions;
 using backend.Services;
+using api.Model;
 
 namespace backend.Controllers;
 
@@ -91,16 +92,16 @@ public class AuthController : ControllerBase
 
     [HttpPost]
     [Route("refresh")]
-    public IActionResult Refresh(string refreshToken)
+    public IActionResult Refresh(RefreshTokenModel refreshToken)
     {
-        if (string.IsNullOrEmpty(refreshToken))
+        if (string.IsNullOrEmpty(refreshToken.RefreshToken))
         {
             return StatusCode(500, new { message = "Refresh token is necessary" });
         }
 
         var newRefreshToken = GenerateRefreshToken();
 
-        User? user = _userManagerService.LoggedUsers.Find(user => user.RefreshToken == refreshToken);
+        User? user = _userManagerService.LoggedUsers.Find(user => user.RefreshToken == refreshToken.RefreshToken);
 
         if (user == null)
         {
