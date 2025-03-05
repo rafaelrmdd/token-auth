@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, AxiosError } from "axios";
-import { parseCookies, setCookie } from "nookies";
+import { destroyCookie, parseCookies, setCookie } from "nookies";
 
 interface FailedRequest {
     onSuccess: (token: string) => void;
@@ -16,6 +16,7 @@ export const api : AxiosInstance  = axios.create({
         Authorization: `Bearer ${cookies['auth.token']}`
     }
 })  
+
 
 api.interceptors.response.use(response => {
     return response;
@@ -34,14 +35,13 @@ api.interceptors.response.use(response => {
                     refreshToken: refreshToken,
                 }).then(response => {
                     const { jwt } = response.data;
-                    console.log("re" ,{jwt: jwt, refreshToken: response.data.refreshToken});
                 
                     setCookie(undefined, 'auth.token', jwt, {
                         maxAge: 60 * 60 * 24 * 30, // 30 days
                         path: "/"
                     });
         
-                    setCookie(undefined, 'auth.refreshToken', response.data.refreshToken, {
+                    setCookie(undefined, 'auth.refreshToken', response.data.newRefreshToken, {
                         maxAge: 60 * 60 * 24 * 30, 
                         path: "/"
                     });
@@ -73,7 +73,11 @@ api.interceptors.response.use(response => {
                 })
             })
         } else {
-            //deslogar usuario
+            destroyCookie(undefined, 'auth.token');
+            destroyCookie(undefined, 'auth.refreshToken');
+            window.location.href = "/login"        
         }
+
+        return Promise.reject(error);
     }
 })

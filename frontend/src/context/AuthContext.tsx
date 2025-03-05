@@ -2,7 +2,7 @@ import { createContext, ReactNode, useEffect, useState } from "react";
 import { api } from "../services/api/api";
 import { AxiosResponse } from "axios";
 import { useNavigate } from "react-router";
-import { parseCookies, setCookie } from "nookies";
+import { destroyCookie, parseCookies, setCookie } from "nookies";
 
 type User = {
     email: string;
@@ -34,12 +34,13 @@ export function AuthContextProvider ({children} : AuthProviderProps) {
     useEffect(() => {
         const { 'auth.token': token } = parseCookies();
         
-
         if (token) {
             api.get('me').then(response => {
-                const { email, permissions, roles } = response.data
+                const { email, permissions, roles } = response.data;
 
-                setUser({ email, permissions, roles })
+                setUser({ email, permissions, roles });
+            }).catch(() => {
+                signOut();
             })
         }
     }, [])
@@ -47,6 +48,12 @@ export function AuthContextProvider ({children} : AuthProviderProps) {
     const navigate = useNavigate();
     const [user, setUser] = useState<User>();
     const isAuthenticated = !!user;
+
+    function signOut() {
+        destroyCookie(undefined, 'auth.token');
+        destroyCookie(undefined, 'auth.refreshToken');
+        navigate("/login")
+    }
     
     async function signIn({email, password} : SignInCredentials) {
         try{

@@ -68,13 +68,12 @@ public class AuthController : ControllerBase
             user.Permissions,
             user.Password,
             user.Roles,
-            jwt,
             refreshToken
         );
 
         _userManagerService.AddUser(newLoggedUser);
 
-        User? specificUser = _userManagerService.LoggedUsers.FirstOrDefault(loggedUser => loggedUser.JWT == jwt);
+        User? specificUser = _userManagerService.LoggedUsers.FirstOrDefault(loggedUser => loggedUser.Email == "admin@gmail.com");
 
         if (specificUser == null)
         {
@@ -101,7 +100,9 @@ public class AuthController : ControllerBase
 
         var newRefreshToken = GenerateRefreshToken();
 
-        User? user = _userManagerService.LoggedUsers.Find(user => user.RefreshToken == refreshToken.RefreshToken);
+
+        User? user = _userManagerService.LoggedUsers.FirstOrDefault(user => user.Email == "admin@gmail.com");
+        user.RefreshToken = newRefreshToken;
 
         if (user == null)
         {
@@ -109,6 +110,7 @@ public class AuthController : ControllerBase
         }
 
         var jwt = GenerateJwtToken(user);
+
 
         return Ok(new
         {
